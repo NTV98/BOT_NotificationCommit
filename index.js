@@ -19,8 +19,13 @@ app.post('/github-webhook', async (req, res) => {
     const { commits, repository, pusher } = req.body;
 
     if (commits && commits.length > 0) {
+
+        const customRepoName = req.query.repoName;
+        const repoDisplayName = customRepoName || repository.name;
+
+
         const commitMessages = commits.map(c => `• ${c.message} by ${c.author.name}`).join('\n');
-        const message = `📌 *${repository.name}* có commit mới bởi *${pusher.name}*:\n\n${commitMessages}`;
+        const message = `📌*${repoDisplayName}* - *${repository.name}* có commit mới bởi *${pusher.name}*:\n\n${commitMessages}`;
         
         await axios.post(`https://api.telegram.org/bot${token}/sendMessage`, {
             chat_id: chatId,
