@@ -1,0 +1,28 @@
+{
+  "name": "my-tele-bot-webhook",
+  "version": "1.0.0",
+  "description": "A simple Telegram bot webhook for GitHub notifications",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  },
+  "keywords": [
+    "telegram",
+    "bot",
+    "webhook",
+    "github",
+    "notifications"
+  ],
+  "author": "",
+  "license": "ISC"
+}
