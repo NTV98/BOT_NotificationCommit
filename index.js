@@ -11,30 +11,46 @@ const token = process.env.TELEGRAM_BOT_TOKEN;
 const chatId = process.env.TELEGRAM_CHAT_ID;
 
 // Middleware
+const URL = process.env.SERVICE_URL || `http://localhost:${PORT}`;
+setInterval(() => {
+    axios.get(URL)
+        .then(() => console.log(`[${new Date().toISOString()}] Ping tự động để giữ dịch vụ hoạt động`))
+        .catch(err => console.error(`Lỗi ping: ${err.message}`));
+}, 10 * 60 * 1000); // 14 phút
+
 
 
 app.use(bodyParser.json());
 
-app.post('/github-webhook', async (req, res) => {
+app.post('/github-webhook', (req, res) => {
+    // Trả về phản hồi ngay lập tức
+    res.sendStatus(200);
+    
+    // Xử lý webhook bất đồng bộ
     const { commits, repository, pusher } = req.body;
 
     if (commits && commits.length > 0) {
+        // Xử lý bất đồng bộ, không chờ đợi
+        (async () => {
+            try {
+                const customRepoName = req.query.repoName;
+                const repoDisplayName = customRepoName || repository.name;
 
-        const customRepoName = req.query.repoName;
-        const repoDisplayName = customRepoName || repository.name;
-
-
-        const commitMessages = commits.map(c => `• ${c.message} by ${c.author.name}`).join('\n');
-        const message = `📌*${repoDisplayName}* - *${repository.name}* có commit mới bởi *${pusher.name}*:\n\n${commitMessages}`;
-        
-        await axios.post(`https://api.telegram.org/bot${token}/sendMessage`, {
-            chat_id: chatId,
-            text: message,
-            parse_mode: 'Markdown'
-        });
+                const commitMessages = commits.map(c => `• ${c.message} by ${c.author.name}`).join('\n');
+                const message = `📌*${repoDisplayName}* - *${repository.name}* có commit mới bởi *${pusher.name}*:\n\n${commitMessages}`;
+                
+                await axios.post(`https://api.telegram.org/bot${token}/sendMessage`, {
+                    chat_id: chatId,
+                    text: message,
+                    parse_mode: 'Markdown'
+                });
+                
+                console.log(`[${new Date().toISOString()}] Đã gửi thông báo thành công`);
+            } catch (error) {
+                console.error(`[${new Date().toISOString()}] Lỗi khi gửi thông báo:`, error.message);
+            }
+        })();
     }
-
-    res.sendStatus(200);
 });
 
 app.get('/', (req, res) => {
