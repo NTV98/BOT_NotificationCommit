@@ -14,9 +14,9 @@ const chatId = process.env.TELEGRAM_CHAT_ID;
 const URL = process.env.SERVICE_URL || `http://localhost:${PORT}`;
 setInterval(() => {
     axios.get(URL)
-        .then(() => console.log(`[${new Date().toISOString()}] Ping tự động để giữ dịch vụ hoạt động`))
+        .then(() => {})
         .catch(err => console.error(`Lỗi ping: ${err.message}`));
-}, 10 * 60 * 1000); // 14 phút
+}, 10 * 60 * 1000); // 10 phút
 
 
 
@@ -43,9 +43,7 @@ app.post('/github-webhook', (req, res) => {
                     chat_id: chatId,
                     text: message,
                     parse_mode: 'Markdown'
-                });
-                
-                console.log(`[${new Date().toISOString()}] Đã gửi thông báo thành công`);
+                });               
             } catch (error) {
                 console.error(`[${new Date().toISOString()}] Lỗi khi gửi thông báo:`, error.message);
             }
